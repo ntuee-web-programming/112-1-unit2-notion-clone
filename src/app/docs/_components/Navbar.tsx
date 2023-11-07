@@ -1,6 +1,7 @@
 import { AiFillDelete, AiFillFileAdd, AiFillFileText } from "react-icons/ai";
 import { RxAvatar } from "react-icons/rx";
 
+import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -42,7 +43,9 @@ async function Navbar() {
           className="w-full hover:bg-slate-200"
           action={async () => {
             "use server";
-            await createDocument(userId);
+            const newDocId = await createDocument(userId);
+            revalidatePath("/docs");
+            redirect(`${publicEnv.NEXT_PUBLIC_BASE_URL}/docs/${newDocId}`);
           }}
         >
           <button

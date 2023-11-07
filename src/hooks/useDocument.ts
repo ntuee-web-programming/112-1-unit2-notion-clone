@@ -5,7 +5,9 @@ import { useParams, useRouter } from "next/navigation";
 import type { Document } from "@/lib/types/db";
 
 export const useDocument = () => {
-  const { docId: documentId } = useParams();
+  const { docId } = useParams();
+  const documentId = Array.isArray(docId) ? docId[0] : docId;
+
   const [document, setDocument] = useState<Document | null>(null);
   const router = useRouter();
   useEffect(() => {

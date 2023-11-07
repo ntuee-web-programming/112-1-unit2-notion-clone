@@ -75,6 +75,7 @@ export const useDocument = () => {
         }
         setDocument(document);
         setDbDocument(document);
+        router.refresh();
       });
     } catch (error) {
       console.error(error);

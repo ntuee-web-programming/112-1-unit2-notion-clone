@@ -6,7 +6,7 @@ function DocPage() {
   const { title, setTitle, content, setContent } = useDocument();
   return (
     <div className="w-full">
-      <nav className="flex w-full justify-between p-2 shadow-sm">
+      <nav className="sticky top-0 flex w-full justify-between p-2 shadow-sm">
         <input
           value={title}
           onChange={(e) => {
@@ -23,7 +23,7 @@ function DocPage() {
           onChange={(e) => {
             setContent(e.target.value);
           }}
-          className="h-[90vh] w-full outline-0 "
+          className="h-[80vh] w-full outline-0 "
         />
       </section>
     </div>

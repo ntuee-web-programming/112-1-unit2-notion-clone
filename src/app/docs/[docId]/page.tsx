@@ -3,8 +3,13 @@
 import { useDocument } from "@/hooks/useDocument";
 
 function DocPage() {
-  const { documentId } = useDocument();
-  return <div>Doc ID: {documentId}</div>;
+  const { documentId, document } = useDocument();
+  return (
+    <div>
+      <h1>Doc ID: {documentId}</h1>
+      <p>{JSON.stringify(document, null, 2)}</p>
+    </div>
+  );
 }
 
 export default DocPage;

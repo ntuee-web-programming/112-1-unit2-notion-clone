@@ -124,7 +124,8 @@ export async function PUT(
       useTLS: true,
     });
 
-    await pusher.trigger(`${updatedDoc.displayId}`, "doc:update", {
+    // Private channels are in the format: private-...
+    await pusher.trigger(`private-${updatedDoc.displayId}`, "doc:update", {
       senderId: userId,
       document: {
         id: updatedDoc.displayId,

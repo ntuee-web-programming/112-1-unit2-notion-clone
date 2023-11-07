@@ -66,7 +66,8 @@ export const useDocument = () => {
   // Subscribe to pusher events
   useEffect(() => {
     if (!documentId) return;
-    const channelName = `${documentId}`;
+    // Private channels are in the format: private-...
+    const channelName = `private-${documentId}`;
     try {
       const channel = pusherClient.subscribe(channelName);
       channel.bind("doc:update", ({ senderId, document }: PusherPayload) => {

@@ -11,6 +11,7 @@ export const useDocument = () => {
   const documentId = Array.isArray(docId) ? docId[0] : docId;
 
   const [document, setDocument] = useState<Document | null>(null);
+  const [dbDocument, setDbDocument] = useState<Document | null>(null);
   const [debouncedDocument] = useDebounce(document, 300);
   const router = useRouter();
 
@@ -31,11 +32,15 @@ export const useDocument = () => {
       if (!res.ok) {
         return;
       }
-      // Update the navbar
-      router.refresh();
+      const data: Document = await res.json();
+      // Update the navbar if the title changed
+      if (dbDocument?.title !== data.title) {
+        router.refresh();
+      }
+      setDbDocument(data);
     };
     updateDocument();
-  }, [debouncedDocument, documentId, router]);
+  }, [debouncedDocument, documentId, router, dbDocument]);
 
   useEffect(() => {
     if (!documentId) return;
@@ -48,6 +53,7 @@ export const useDocument = () => {
       }
       const data = await res.json();
       setDocument(data);
+      setDbDocument(data);
     };
     fetchDocument();
   }, [documentId, router]);

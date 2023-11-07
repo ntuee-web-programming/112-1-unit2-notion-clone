@@ -172,13 +172,18 @@
     - `secret`
     - `cluster`
 5.  Copy these keys to your `.env.local` file:
+
     ```text
     PUSHER_ID=<app_id>
     NEXT_PUBLIC_PUSHER_KEY=<key>
     PUSHER_SECRET=<secret>
     NEXT_PUBLIC_PUSHER_CLUSTER=<cluster>
     ```
+
     `NEXT_PUBLIC` prefix is required for the client side to access the env variable.
+
+    Also, please remember to add these keys to your environment variables handler in `src/lib/env/private.ts` and `src/lib/env/public.ts`. You can view those two files for more details.
+
 6.  Go to `App Settings` tab, scroll down to `Enable authorized connections` and enable it.
     Note: If you enable the `Enable client events` option, every connection will last only 30 seconds if not authorized. So if you just want to do some experiments, you might need to disable this option.
 

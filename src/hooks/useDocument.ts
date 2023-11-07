@@ -11,7 +11,7 @@ export const useDocument = () => {
   const documentId = Array.isArray(docId) ? docId[0] : docId;
 
   const [document, setDocument] = useState<Document | null>(null);
-  const [debouncedDocument] = useDebounce(document, 1000);
+  const [debouncedDocument] = useDebounce(document, 300);
   const router = useRouter();
 
   // When the debounced document changes, update the document

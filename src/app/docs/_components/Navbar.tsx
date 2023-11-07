@@ -1,8 +1,10 @@
 import { AiFillFileAdd } from "react-icons/ai";
 import { RxAvatar } from "react-icons/rx";
 
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import { publicEnv } from "@/lib/env/public";
 
@@ -21,6 +23,15 @@ async function Navbar() {
               {session?.user?.username ?? "User"}
             </h1>
           </div>
+          <Link href={`/auth/signout`}>
+            <Button
+              variant={"ghost"}
+              type={"submit"}
+              className="hover:bg-slate-200"
+            >
+              Sign Out
+            </Button>
+          </Link>
         </div>
 
         <form className="w-full hover:bg-slate-200">

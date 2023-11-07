@@ -14,13 +14,28 @@ export const useDocument = () => {
   const [debouncedDocument] = useDebounce(document, 1000);
   const router = useRouter();
 
-  // Experiment: See the effects of debouncing
+  // When the debounced document changes, update the document
   useEffect(() => {
-    console.log("=======");
-  }, [document]);
-  useEffect(() => {
-    console.log("*******");
-  }, [debouncedDocument]);
+    const updateDocument = async () => {
+      if (!debouncedDocument) return;
+      const res = await fetch(`/api/documents/${documentId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: debouncedDocument.title,
+          content: debouncedDocument.content,
+        }),
+      });
+      if (!res.ok) {
+        return;
+      }
+      // Update the navbar
+      router.refresh();
+    };
+    updateDocument();
+  }, [debouncedDocument, documentId, router]);
 
   useEffect(() => {
     if (!documentId) return;

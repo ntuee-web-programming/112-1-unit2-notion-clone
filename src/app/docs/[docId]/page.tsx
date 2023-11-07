@@ -1,10 +1,10 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useDocument } from "@/hooks/useDocument";
 
 function DocPage() {
-  const { docId } = useParams();
-  return <div>Doc ID: {docId}</div>;
+  const { documentId } = useDocument();
+  return <div>Doc ID: {documentId}</div>;
 }
 
 export default DocPage;

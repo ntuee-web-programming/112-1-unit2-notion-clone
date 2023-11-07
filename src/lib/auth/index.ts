@@ -17,11 +17,12 @@ export const {
     async session({ session, token }) {
       const email = token.email || session?.user?.email;
       if (!email) return session;
-
       const [user] = await db
         .select({
           id: usersTable.displayId,
           username: usersTable.username,
+          provider: usersTable.provider,
+          email: usersTable.email,
         })
         .from(usersTable)
         .where(eq(usersTable.email, email.toLowerCase()))
@@ -30,9 +31,10 @@ export const {
       return {
         ...session,
         user: {
-          ...session.user,
           id: user.id,
-          username: usersTable.username,
+          username: user.username,
+          email: user.email,
+          provider: user.provider,
         },
       };
     },

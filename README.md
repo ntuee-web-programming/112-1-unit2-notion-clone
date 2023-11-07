@@ -209,11 +209,15 @@ We use the latest version (v5) of NextAuth, which is still in beta. So there are
      - `Authorization callback URL`: `http://localhost:3000/api/auth/callback/github`
    - Click `Register application`
    - Copy the `Client ID` and `Client Secret` to your `.env.local` file:
+
      ```text
      AUTH_GITHUB_ID=<Client ID>
      AUTH_GITHUB_SECRET=<Client Secret>
      ```
+
      Note that in NextAuth v5, the prefix `AUTH_` is required for the env variables.
+
+     Note that you do not have to add those keys to `src/lib/env/private.ts` since they are automatically handled by NextAuth.
 
 3. Add `AUTH_SECRET` to `.env.local`:
 
@@ -222,6 +226,8 @@ We use the latest version (v5) of NextAuth, which is still in beta. So there are
    ```
 
    This is used to encrypt the session token. You can use any random string here. Make sure to keep it secret and update it regularly.
+
+   Note that you do not have to add those keys to `src/lib/env/private.ts` since they are automatically handled by NextAuth.
 
 4. Create `./src/lib/auth.ts`
 
@@ -241,4 +247,18 @@ We use the latest version (v5) of NextAuth, which is still in beta. So there are
 
    ```ts
    export { GET, POST } from "@/lib/auth";
+   ```
+
+6. Add providers to `./src/app/layout.ts`
+   ```tsx
+   import { SessionProvider } from "next-auth/react";
+   ...
+      return (
+         <html lang="en">
+            <body className={inter.className}>
+               <SessionProvider>{children}</SessionProvider>
+            </body>
+         </html>
+      );
+   ...
    ```

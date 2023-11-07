@@ -53,9 +53,39 @@
    cd ./src
    mkdir db
    ```
-6. Copy the `./src/db/index.ts` from this repo to your project.
+6. Create the `./src/db/index.ts` file:
 
-   Remember to setup the env handlers in `src/lib/env/private.ts`
+   ```ts
+   import { drizzle } from "drizzle-orm/node-postgres";
+   import { Client } from "pg";
+
+   import { privateEnv } from "@/lib/env/private";
+
+   const client = new Client({
+     connectionString: privateEnv.POSTGRES_URL,
+     connectionTimeoutMillis: 5000,
+   });
+   await client.connect();
+   export const db = drizzle(client);
+   ```
+
+   Remember to setup the environment variables handlers in `src/lib/env/private.ts`:
+
+   ```ts
+   import { z } from "zod";
+
+   const privateEnvSchema = z.object({
+     POSTGRES_URL: z.string().url(),
+   });
+
+   type PrivateEnv = z.infer<typeof privateEnvSchema>;
+
+   export const privateEnv: PrivateEnv = {
+     POSTGRES_URL: process.env.POSTGRES_URL!,
+   };
+
+   privateEnvSchema.parse(privateEnv);
+   ```
 
 7. Create an empty `./src/db/schema.ts` file
 
@@ -66,21 +96,32 @@
    yarn add dotenv
    ```
 
-9. Add scripts
-   Add the following scripts to the `./package.json` file:
+9. Change the `target` option in `tsconfig.json` to `es2017`:
 
    ```json
    {
-     "scripts": {
-       // This script will update the database schema
-       "migrate": "drizzle-kit push:pg",
-       // This script opens a GUI to manage the database
-       "studio": "drizzle-kit studio"
+     "compilerOptions": {
+       "target": "es2017",
+       ...
      }
    }
    ```
 
-10. Add `pg-data` to `.gitignore`
+10. Add scripts
+    Add the following scripts to the `./package.json` file:
+
+    ```json
+    {
+      "scripts": {
+        // This script will update the database schema
+        "migrate": "drizzle-kit push:pg",
+        // This script opens a GUI to manage the database
+        "studio": "drizzle-kit studio"
+      }
+    }
+    ```
+
+11. Add `pg-data` to `.gitignore`
     ```text
     ...
     pg-data/

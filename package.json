@@ -7,21 +7,28 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "migrate": "drizzle-kit push:pg",
+    "studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "dotenv": "^16.3.1",
+    "drizzle-orm": "^0.28.6",
     "next": "14.0.1",
+    "pg": "^8.11.3",
     "react": "^18",
     "react-dom": "^18"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.2.1",
     "@types/node": "^20",
+    "@types/pg": "^8.10.8",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
     "autoprefixer": "^10.0.1",
+    "drizzle-kit": "^0.19.13",
     "eslint": "^8.53.0",
     "eslint-config-next": "14.0.1",
     "eslint-config-prettier": "^9.0.0",

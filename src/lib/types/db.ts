@@ -4,3 +4,9 @@ export type User = {
   email: string;
   provider: "github" | "credentials";
 };
+
+export type Document = {
+  id: string;
+  title: string;
+  content: string;
+};

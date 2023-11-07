@@ -10,6 +10,7 @@ export const useDocument = () => {
 
   const [document, setDocument] = useState<Document | null>(null);
   const router = useRouter();
+
   useEffect(() => {
     if (!documentId) return;
     const fetchDocument = async () => {
@@ -25,8 +26,30 @@ export const useDocument = () => {
     fetchDocument();
   }, [documentId, router]);
 
+  const title = document?.title || "";
+  const setTitle = (newTitle: string) => {
+    if (document === null) return;
+    setDocument({
+      ...document,
+      title: newTitle,
+    });
+  };
+
+  const content = document?.content || "";
+  const setContent = (newContent: string) => {
+    if (document === null) return;
+    setDocument({
+      ...document,
+      content: newContent,
+    });
+  };
+
   return {
     documentId,
     document,
+    title,
+    setTitle,
+    content,
+    setContent,
   };
 };

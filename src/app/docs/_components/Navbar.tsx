@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import { publicEnv } from "@/lib/env/public";
 
-import { createDocument, getDocuments } from "./actions";
+import { createDocument, deleteDocument, getDocuments } from "./actions";
 
 async function Navbar() {
   const session = await auth();
@@ -75,7 +75,16 @@ async function Navbar() {
                   </span>
                 </div>
               </Link>
-              <form className="hidden px-2 text-slate-400 hover:text-red-400 group-hover:flex">
+              <form
+                className="hidden px-2 text-slate-400 hover:text-red-400 group-hover:flex"
+                action={async () => {
+                  "use server";
+                  const docId = doc.document.displayId;
+                  await deleteDocument(docId);
+                  revalidatePath("/docs");
+                  redirect(`${publicEnv.NEXT_PUBLIC_BASE_URL}/docs`);
+                }}
+              >
                 <button type={"submit"}>
                   <AiFillDelete size={16} />
                 </button>

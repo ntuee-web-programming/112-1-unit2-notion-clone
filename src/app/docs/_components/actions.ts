@@ -40,3 +40,12 @@ export const getDocuments = async (userId: string) => {
   });
   return documents;
 };
+
+export const deleteDocument = async (documentId: string) => {
+  "use server";
+  console.log("[deleteDocument]");
+  await db
+    .delete(documentsTable)
+    .where(eq(documentsTable.displayId, documentId));
+  return;
+};

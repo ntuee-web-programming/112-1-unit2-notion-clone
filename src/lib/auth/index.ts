@@ -21,6 +21,7 @@ export const {
       const [user] = await db
         .select({
           id: usersTable.displayId,
+          username: usersTable.username,
         })
         .from(usersTable)
         .where(eq(usersTable.email, email.toLowerCase()))
@@ -31,6 +32,7 @@ export const {
         user: {
           ...session.user,
           id: user.id,
+          username: usersTable.username,
         },
       };
     },

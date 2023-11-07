@@ -3,8 +3,9 @@ import { NextResponse, type NextRequest } from "next/server";
 import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import { usersToDocumentsTable } from "@/db/schema";
+import { documentsTable, usersToDocumentsTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
+import { updateDocSchema } from "@/validators/updateDocument";
 
 // GET /api/documents/:documentId
 export async function GET(
@@ -62,6 +63,68 @@ export async function GET(
       {
         status: 500,
       },
+    );
+  }
+}
+
+// PUT /api/documents/:documentId
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { docId: string } },
+) {
+  try {
+    // Get user from session
+    const session = await auth();
+    if (!session || !session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const userId = session.user.id;
+
+    // Check ownership of document
+    const [doc] = await db
+      .select({
+        documentId: usersToDocumentsTable.documentId,
+      })
+      .from(usersToDocumentsTable)
+      .where(
+        and(
+          eq(usersToDocumentsTable.userId, userId),
+          eq(usersToDocumentsTable.documentId, params.docId),
+        ),
+      );
+    if (!doc) {
+      return NextResponse.json({ error: "Doc Not Found" }, { status: 404 });
+    }
+
+    // Parse the request body
+    const reqBody = await req.json();
+    let validatedReqBody: Partial<Omit<Document, "id">>;
+    try {
+      validatedReqBody = updateDocSchema.parse(reqBody);
+    } catch (error) {
+      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+    }
+
+    // Update document
+    const [updatedDoc] = await db
+      .update(documentsTable)
+      .set(validatedReqBody)
+      .where(eq(documentsTable.displayId, params.docId))
+      .returning();
+
+    return NextResponse.json(
+      {
+        id: updatedDoc.displayId,
+        title: updatedDoc.title,
+        content: updatedDoc.content,
+      },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
     );
   }
 }

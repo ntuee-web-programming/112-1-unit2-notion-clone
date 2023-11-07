@@ -1,10 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 
 import { useDebounce } from "use-debounce";
 
-import type { Document } from "@/lib/types/db";
+import { pusherClient } from "@/lib/pusher/client";
+import type { Document, User } from "@/lib/types/db";
+
+type PusherPayload = {
+  senderId: User["id"];
+  document: Document;
+};
 
 export const useDocument = () => {
   const { docId } = useParams();
@@ -15,8 +22,22 @@ export const useDocument = () => {
   const [debouncedDocument] = useDebounce(document, 300);
   const router = useRouter();
 
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+
+  const isSynced = useMemo(() => {
+    if (document === null || dbDocument === null) return true;
+    return (
+      document.title === dbDocument.title &&
+      document.content === dbDocument.content
+    );
+  }, [document, dbDocument]);
+
   // When the debounced document changes, update the document
   useEffect(() => {
+    if (debouncedDocument === null) return;
+    if (isSynced) return;
+
     const updateDocument = async () => {
       if (!debouncedDocument) return;
       const res = await fetch(`/api/documents/${documentId}`, {
@@ -40,7 +61,31 @@ export const useDocument = () => {
       setDbDocument(data);
     };
     updateDocument();
-  }, [debouncedDocument, documentId, router, dbDocument]);
+  }, [debouncedDocument, documentId, router, dbDocument, isSynced]);
+
+  // Subscribe to pusher events
+  useEffect(() => {
+    if (!documentId) return;
+    const channelName = `${documentId}`;
+    try {
+      const channel = pusherClient.subscribe(channelName);
+      channel.bind("doc:update", ({ senderId, document }: PusherPayload) => {
+        if (senderId === userId) {
+          return;
+        }
+        setDocument(document);
+        setDbDocument(document);
+      });
+    } catch (error) {
+      console.error(error);
+      router.push("/docs");
+    }
+
+    // Unsubscribe from pusher events when the component unmounts
+    return () => {
+      pusherClient.unsubscribe(channelName);
+    };
+  }, [documentId, router, userId]);
 
   useEffect(() => {
     if (!documentId) return;

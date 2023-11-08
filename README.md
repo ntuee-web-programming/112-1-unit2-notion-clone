@@ -121,6 +121,8 @@
     }
     ```
 
+    Remember to run `yarn migrate` after you make changes to the database schema, namely the `./src/db/schema.ts` file.
+
 11. Add `pg-data` to `.gitignore`
     ```text
     ...
@@ -160,7 +162,7 @@
 2.  Create a pusher account at https://pusher.com/
 3.  Create a new app
 
-    - Click `Manage` on the `Channel` tab
+    - Click `Manage` or `Get Started` on the `Channel` tab
     - Click `Create app`
     - Enter the app name
     - Select a cluster. Pick the one closest to you, i.e. `ap3(Asia Pacific (Tokyo))`
@@ -202,7 +204,7 @@ We use the latest version (v5) of NextAuth, which is still in beta. So there are
    - Go to `Settings` tab of your Github account
    - Click `Developer settings` on the left sidebar
    - Click `OAuth Apps` on the left sidebar
-   - Click `New OAuth App`
+   - Click `New OAuth App` or `Registr a new application`
    - Enter the following information:
      - `Application name`: `Notion Clone` (or any name you like)
      - `Homepage URL`: `http://localhost:3000`
@@ -214,6 +216,8 @@ We use the latest version (v5) of NextAuth, which is still in beta. So there are
      AUTH_GITHUB_ID=<Client ID>
      AUTH_GITHUB_SECRET=<Client Secret>
      ```
+
+     Before copying the Clinet Secret, you may need to click on `Generate a new client secret` first.
 
      Note that in NextAuth v5, the prefix `AUTH_` is required for the env variables.
 

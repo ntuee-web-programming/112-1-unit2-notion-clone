@@ -201,8 +201,7 @@
 2.  Create a pusher account at https://pusher.com/
 3.  Create a new app
 
-    - Click `Manage` or `Get Started` on the `Channel` tab
-    - Click `Create app`
+    - Click `Get Started` or `Manage/Create app`on the `Channel` tab
     - Enter the app name
     - Select a cluster. Pick the one closest to you, i.e. `ap3(Asia Pacific (Tokyo))`
     - Click `Create app`

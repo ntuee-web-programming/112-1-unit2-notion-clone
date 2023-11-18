@@ -19,6 +19,7 @@ export const useDocument = () => {
 
   const [document, setDocument] = useState<Document | null>(null);
   const [dbDocument, setDbDocument] = useState<Document | null>(null);
+  // [NOTE] 2023.11.18 - Extracting the debounceMilliseconds to a constant helps ensure the two useDebounce hooks are using the same value.
   const debounceMilliseconds = 300;
   const [debouncedDocument] = useDebounce(document, debounceMilliseconds);
   const [debouncedDbDocument] = useDebounce(dbDocument, debounceMilliseconds);
@@ -27,6 +28,7 @@ export const useDocument = () => {
   const { data: session } = useSession();
   const userId = session?.user?.id;
 
+  // [FIX] 2023.11.18 - This memo should compare the debounced values to avoid premature updates to the DB.
   const isSynced = useMemo(() => {
     if (debouncedDocument === null || debouncedDbDocument === null) return true;
     return (
@@ -36,13 +38,20 @@ export const useDocument = () => {
   }, [debouncedDocument, debouncedDbDocument]);
 
   // When the debounced document changes, update the document
+  // [FIX] 2023.11.18 - Listen to debouncedDbDocument instead of dbDocument.
+  // Explanation: This useEffect should trigger on the change of the debouncedDocument and debouncedDbDocument.
+  //              Originally, it was triggered by debouncedDocument but dbDocument.
+  //              Therefore, when the received pusher event updates the document and the dbDocument.
+  //              This useEffect will trigger twice: one when dbDocument is updated and another when debouncedDocument is updated.
+  //              However, the two updates PUTs sends conflicting pusher events to the other clients, causing the document to twitch indefinitely.
   useEffect(() => {
-    if (debouncedDocument === null) return;
-    if (debouncedDbDocument === null) return;
+    // [NOTE] 2023.11.18 - If either of the debounced value is null, then `isSynced` must be true. 
+    //                     Therefore, we don't need to explicitly check for their null values.
     if (isSynced) return;
 
     const updateDocument = async () => {
       if (!debouncedDocument) return;
+      // [NOTE] 2023.11.18 - This PUT request will trigger a pusher event that will update the document to the other clients.
       const res = await fetch(`/api/documents/${documentId}`, {
         method: "PUT",
         headers: {
@@ -78,6 +87,7 @@ export const useDocument = () => {
         if (senderId === userId) {
           return;
         }
+        // [NOTE] 2023.11.18 - This is the pusher event that updates the dbDocument.
         setDocument(received_document);
         setDbDocument(received_document);
         router.refresh();
